@@ -6,7 +6,7 @@ import com.summer.cleaner.arguments.Meter;
 import com.summer.cleaner.arguments.Point;
 import com.summer.cleaner.field.Field;
 import com.summer.cleaner.out.OutMessage;
-import com.summer.cleaner.robot.CleanerFunctional;
+import com.summer.cleaner.robot.CleanerFunctionalStaticImpl;
 import com.summer.cleaner.robot.CleanerImpl;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,19 +58,19 @@ public class CommandInterpreter {
       Object argument) {
     switch (commandKey) {
       case "move":
-        return CleanerFunctional.move(cleaner, (Meter) argument);
+        return CleanerFunctionalStaticImpl.move(cleaner, (Meter) argument);
 
       case "turn":
-        return CleanerFunctional.turn(cleaner, (Angle) argument);
+        return CleanerFunctionalStaticImpl.turn(cleaner, (Angle) argument);
 
       case "set":
-        return CleanerFunctional.set(cleaner, (CleanMode) argument);
+        return CleanerFunctionalStaticImpl.set(cleaner, (CleanMode) argument);
 
       case "start":
-        return CleanerFunctional.start(cleaner);
+        return CleanerFunctionalStaticImpl.start(cleaner);
 
       case "stop":
-        return CleanerFunctional.stop(cleaner);
+        return CleanerFunctionalStaticImpl.stop(cleaner);
 
       default:
         throw new IllegalArgumentException("Unknown command key: " + commandKey);
