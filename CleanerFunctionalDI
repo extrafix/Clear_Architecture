@@ -1,0 +1,76 @@
+# Функциональный DI
+
+В Java я могу использовать функциональные интерфейсы, то есть те, для реализации которых смогу передавать просто лямду, не создавая явно класс.
+Писать реализации в вызовах я не хочу, поэтому использую плюсы модульнуго стиля и каждую функцию реализую в своем файле, который будет реализацией функционального интерфейса.
+Затем, эти реализации я смогу подавать в метод, в котором до этого вызывал реализации статических методов.
+
+Вопросы:
+Как мне разделить функции, которые предпологают входящие аргументы и которые их не предполагают?
+Самый простой вариант, просто передавать аргумент всегда, а в реализации уже не использовать, но это начнет путать код.
+Сделай сначала так, а потом придумай вариант лучше.
+Хотелось бы избавиться от вызова методов статического класса.
+Реализации я по прежнему могу брать из статического класса, но переместить это в конфигурацию из кода логики.
+
+Синтаксически java понимает то, что я хотел выразить.
+
+@FunctionalInterface
+interface Move{
+
+    call(Cleaner cleaner, Meter argument)
+}
+
+@FunctionalInterface
+interface Turn{
+
+    call(Cleaner cleaner, Angle argument)
+}
+
+@FunctionalInterface
+interface Set{
+
+    call(Cleaner cleaner, CleanMode argument)
+}
+
+@FunctionalInterface
+interface Start{
+
+    call(Cleaner cleaner, Object argument)
+}
+
+@FunctionalInterface
+interface Stop{
+
+    call(Cleaner cleaner, Object argument)
+}
+
+CleanerFunctional{
+
+public CleanerFunctional(
+Stop stop
+)
+
+}
+
+  private Pair<CleanerImpl, OutMessage> callCommand(
+      CleanerImpl cleaner,
+      String commandKey,
+      Object argument) {
+    switch (commandKey) {
+      case "move":
+        return CleanerFunctional.move(cleaner, (Meter) argument);
+
+      case "turn":
+        return CleanerFunctional.turn(cleaner, (Angle) argument);
+
+      case "set":
+        return CleanerFunctional.set(cleaner, (CleanMode) argument);
+
+      case "start":
+        return CleanerFunctional.start(cleaner);
+
+      case "stop":
+        return CleanerFunctional.stop(cleaner);
+
+      default:
+        throw new IllegalArgumentException("Unknown command key: " + commandKey);
+    }
