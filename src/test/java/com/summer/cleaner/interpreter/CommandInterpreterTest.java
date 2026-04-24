@@ -2,6 +2,7 @@ package com.summer.cleaner.interpreter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.summer.cleaner.configuration.CleanerOopConfiguration;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -28,8 +29,8 @@ class CommandInterpreterTest {
         "move 50",
         "stop"
     );
-
-    CommandInterpreter interpreter = new CommandInterpreter();
+    CleanerOopConfiguration.init();
+    CommandInterpreter interpreter = CleanerOopConfiguration.CommandInterpreter();
     interpreter.exec(commands);
 
     String expectedOutput =
