@@ -5,19 +5,17 @@ import com.summer.cleaner.arguments.CleanMode;
 import com.summer.cleaner.arguments.Meter;
 import com.summer.cleaner.arguments.Point;
 import com.summer.cleaner.field.Field;
-import com.summer.cleaner.function.impl.MoveImpl;
-import com.summer.cleaner.function.impl.StartImpl;
-import com.summer.cleaner.function.impl.TurnImpl;
+import com.summer.cleaner.function.api.UniversalFunction;
+import com.summer.cleaner.function.impl.UniversalFunctionImpl;
 import com.summer.cleaner.out.OutMessage;
-import com.summer.cleaner.robot.CleanerFunctionalDI;
-import com.summer.cleaner.robot.CleanerFunctionalStaticImpl;
 import com.summer.cleaner.robot.CleanerImpl;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class CommandInterpreter {
 
-  private final CleanerFunctionalDI cleanerFunctional;
+
+  private final UniversalFunction universalFunction;
 
   Point currentPosition = new Point(
       Meter.of(0),
@@ -30,12 +28,11 @@ public class CommandInterpreter {
   InToCommandTransformer inToCommandTransformer = new InToCommandTransformer();
 
   public CommandInterpreter() {
-    cleanerFunctional = new CleanerFunctionalDI(
-        new MoveImpl(),
-        new TurnImpl(),
-        (cleaner, argument) -> CleanerFunctionalStaticImpl.set((CleanerImpl) cleaner, argument),
-        new StartImpl(),
-        CleanerFunctionalStaticImpl::stop_2);
+    this.universalFunction = new UniversalFunctionImpl();
+  }
+
+  public CommandInterpreter(UniversalFunction universalFunction) {
+    this.universalFunction = new UniversalFunctionImpl();
   }
 
 
@@ -63,31 +60,8 @@ public class CommandInterpreter {
       Pair<String, Object> pair) {
     String commandKey = pair.getKey();
     Object argument = pair.getValue();
-    return callCommand(cleaner, commandKey, argument);
+    return universalFunction.callCommand(cleaner, commandKey, argument);
   }
 
-  private Pair<CleanerImpl, OutMessage> callCommand(
-      CleanerImpl cleaner,
-      String commandKey,
-      Object argument) {
-    switch (commandKey) {
-      case "move":
-        return cleanerFunctional.move(cleaner, (Meter) argument);
 
-      case "turn":
-        return cleanerFunctional.turn(cleaner, (Angle) argument);
-
-      case "set":
-        return cleanerFunctional.set(cleaner, (CleanMode) argument);
-
-      case "start":
-        return cleanerFunctional.start(cleaner, argument);
-
-      case "stop":
-        return cleanerFunctional.stop(cleaner, argument);
-
-      default:
-        throw new IllegalArgumentException("Unknown command key: " + commandKey);
-    }
-  }
 }
