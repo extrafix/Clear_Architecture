@@ -5,13 +5,19 @@ import com.summer.cleaner.arguments.CleanMode;
 import com.summer.cleaner.arguments.Meter;
 import com.summer.cleaner.arguments.Point;
 import com.summer.cleaner.field.Field;
+import com.summer.cleaner.function.impl.MoveImpl;
+import com.summer.cleaner.function.impl.StartImpl;
+import com.summer.cleaner.function.impl.TurnImpl;
 import com.summer.cleaner.out.OutMessage;
+import com.summer.cleaner.robot.CleanerFunctionalDI;
 import com.summer.cleaner.robot.CleanerFunctionalStaticImpl;
 import com.summer.cleaner.robot.CleanerImpl;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class CommandInterpreter {
+
+  private final CleanerFunctionalDI cleanerFunctional;
 
   Point currentPosition = new Point(
       Meter.of(0),
@@ -22,6 +28,15 @@ public class CommandInterpreter {
       Meter.of(500));
 
   InToCommandTransformer inToCommandTransformer = new InToCommandTransformer();
+
+  public CommandInterpreter() {
+    cleanerFunctional = new CleanerFunctionalDI(
+        new MoveImpl(),
+        new TurnImpl(),
+        (cleaner, argument) -> CleanerFunctionalStaticImpl.set((CleanerImpl) cleaner, argument),
+        new StartImpl(),
+        CleanerFunctionalStaticImpl::stop_2);
+  }
 
 
   boolean exec(List<String> commandStrings) {
@@ -40,7 +55,6 @@ public class CommandInterpreter {
       System.out.println(outMessage.text());
     }
 
-
     return true;
   }
 
@@ -58,19 +72,19 @@ public class CommandInterpreter {
       Object argument) {
     switch (commandKey) {
       case "move":
-        return CleanerFunctionalStaticImpl.move(cleaner, (Meter) argument);
+        return cleanerFunctional.move(cleaner, (Meter) argument);
 
       case "turn":
-        return CleanerFunctionalStaticImpl.turn(cleaner, (Angle) argument);
+        return cleanerFunctional.turn(cleaner, (Angle) argument);
 
       case "set":
-        return CleanerFunctionalStaticImpl.set(cleaner, (CleanMode) argument);
+        return cleanerFunctional.set(cleaner, (CleanMode) argument);
 
       case "start":
-        return CleanerFunctionalStaticImpl.start(cleaner);
+        return cleanerFunctional.start(cleaner, argument);
 
       case "stop":
-        return CleanerFunctionalStaticImpl.stop(cleaner);
+        return cleanerFunctional.stop(cleaner, argument);
 
       default:
         throw new IllegalArgumentException("Unknown command key: " + commandKey);
