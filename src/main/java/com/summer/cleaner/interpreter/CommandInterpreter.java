@@ -27,6 +27,8 @@ public class CommandInterpreter {
 
   InToCommandTransformer inToCommandTransformer = new InToCommandTransformer();
 
+  InToCommandPostfixTransformer inToCommandPostfixTransformer = new InToCommandPostfixTransformer();
+
   public CommandInterpreter() {
     this.universalFunction = new UniversalFunctionImpl();
   }
@@ -35,6 +37,10 @@ public class CommandInterpreter {
     this.universalFunction = new UniversalFunctionImpl();
   }
 
+  boolean execPostfix(String commandAndArgumentString) {
+    List<String> commandStrings = inToCommandPostfixTransformer.execPostfix(commandAndArgumentString);
+    return exec(commandStrings);
+  }
 
   boolean exec(List<String> commandStrings) {
     List<Pair<String, Object>> parsedCommandsAndArguments = inToCommandTransformer.exec(

@@ -55,6 +55,14 @@ class CommandInterpreterTest {
     assertEquals(expectedOutput, outputStreamCaptor.toString().trim());
   }
 
+  @Test
+  void testExecPostfix(){
+    String inputCommands = "100 move -90 turn soap set start 50 move stop";
+    CommandInterpreter interpreter = new CommandInterpreter();
+    interpreter.execPostfix(inputCommands);
+
+    assertEquals(expectedOutput, outputStreamCaptor.toString().trim());
+  }
 
   @Test
   void testExecUniversalCommand() {
@@ -93,8 +101,6 @@ class CommandInterpreterTest {
 
     interpreter.exec(commands);
 
-    assertEquals(expectedOutput, outputStreamCaptor.toString().
-
-        trim());
+    assertEquals(expectedOutput, outputStreamCaptor.toString().trim());
   }
 }
