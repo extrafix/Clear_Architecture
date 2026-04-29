@@ -2,9 +2,6 @@ package com.summer.cleaner.interpreter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.summer.cleaner.arguments.Angle;
-import com.summer.cleaner.arguments.CleanMode;
-import com.summer.cleaner.arguments.Meter;
 import com.summer.cleaner.function.impl.MoveImpl;
 import com.summer.cleaner.function.impl.StartImpl;
 import com.summer.cleaner.function.impl.TurnImpl;
@@ -74,30 +71,7 @@ class CommandInterpreterTest {
         new StartImpl(),
         CleanerFunctionalStaticImpl::stop_2);
 
-    CommandInterpreter interpreter = new CommandInterpreter((
-        cleaner,
-        commandKey,
-        argument) -> {
-      switch (commandKey) {
-        case "move":
-          return cleanerFunctional.move(cleaner, (Meter) argument);
-
-        case "turn":
-          return cleanerFunctional.turn(cleaner, (Angle) argument);
-
-        case "set":
-          return cleanerFunctional.set(cleaner, (CleanMode) argument);
-
-        case "start":
-          return cleanerFunctional.start(cleaner, argument);
-
-        case "stop":
-          return cleanerFunctional.stop(cleaner, argument);
-
-        default:
-          throw new IllegalArgumentException("Unknown command key: " + commandKey);
-      }
-    });
+    CommandInterpreter interpreter = new CommandInterpreter();
 
     interpreter.exec(commands);
 
