@@ -4,11 +4,16 @@ import com.summer.cleaner.arguments.Angle;
 import com.summer.cleaner.arguments.CleanMode;
 import com.summer.cleaner.arguments.Meter;
 import com.summer.cleaner.arguments.Point;
+import com.summer.cleaner.command.api.Command;
 import com.summer.cleaner.field.Field;
 import com.summer.cleaner.function.api.UniversalFunction;
 import com.summer.cleaner.function.impl.UniversalFunctionImpl;
+import com.summer.cleaner.input.transformer.InToCommandPostfixTransformer;
+import com.summer.cleaner.input.transformer.InToCommandTransformer;
+import com.summer.cleaner.input.transformer.ParsedStringToCommandTransformer;
 import com.summer.cleaner.out.OutMessage;
 import com.summer.cleaner.robot.CleanerImpl;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -26,6 +31,8 @@ public class CommandInterpreter {
       Meter.of(500));
 
   InToCommandTransformer inToCommandTransformer = new InToCommandTransformer();
+
+  ParsedStringToCommandTransformer parsedStringToCommandTransformer = new ParsedStringToCommandTransformer();
 
   InToCommandPostfixTransformer inToCommandPostfixTransformer = new InToCommandPostfixTransformer();
 
@@ -45,29 +52,25 @@ public class CommandInterpreter {
   boolean exec(List<String> commandStrings) {
     List<Pair<String, Object>> parsedCommandsAndArguments = inToCommandTransformer.exec(
         commandStrings);
+    List<Command> commands = parsedStringToCommandTransformer.exec(parsedCommandsAndArguments);
 
     CleanerImpl currentCleaner = CleanerImpl.of(
         currentPosition,
         currentField,
         Angle.of(0),
         CleanMode.WATER);
-    for (Pair<String, Object> pair : parsedCommandsAndArguments) {
-      Pair<CleanerImpl, OutMessage> updatedCleanerAndOutMessage = callCommand(currentCleaner, pair);
-      currentCleaner = updatedCleanerAndOutMessage.getLeft();
-      OutMessage outMessage = updatedCleanerAndOutMessage.getRight();
-      System.out.println(outMessage.text());
-    }
 
+    List<OutMessage> outMessages = new ArrayList<>();
+    for (Command command : commands) {
+      Pair<CleanerImpl, OutMessage> commandResult = command.exec(currentCleaner);
+      currentCleaner = commandResult.getLeft();
+      OutMessage nextOutMessage = commandResult.getRight();
+      outMessages.add(nextOutMessage);
+    }
+    Pair<CleanerImpl, List<OutMessage>> programResult = Pair.of(currentCleaner, outMessages);
+    outMessages.forEach(outMessage ->
+        System.out.println(outMessage.text()));
     return true;
   }
-
-  private Pair<CleanerImpl, OutMessage> callCommand(
-      CleanerImpl cleaner,
-      Pair<String, Object> pair) {
-    String commandKey = pair.getKey();
-    Object argument = pair.getValue();
-    return universalFunction.callCommand(cleaner, commandKey, argument);
-  }
-
 
 }
