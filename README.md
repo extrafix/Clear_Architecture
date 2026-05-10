@@ -3,6 +3,9 @@
 Из вызывающего кода менял только создание OutMessage в реализации метода move() и set() (установка моющего режиме) в [CleanerFunctionalStaticImpl](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/robot/CleanerFunctionalStaticImpl.java)
 Одну из проверок реализовал в этом же классе, а для еще одной создал новый метод в [Field](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/field/Field.java)
 
+[MoveResponse](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/dto/MoveResponse.java)  
+[SetStateResponse](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/dto/SetStateResponse.java)  
+
 
 ### Плюсы
 * Не происходит остановки интерпретации в случае нестандартной ситуации.
