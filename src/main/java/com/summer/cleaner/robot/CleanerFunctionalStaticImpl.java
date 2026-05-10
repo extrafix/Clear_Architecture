@@ -7,6 +7,7 @@ import com.summer.cleaner.arguments.Point;
 import com.summer.cleaner.field.Field;
 import com.summer.cleaner.out.OutMessage;
 import org.apache.commons.lang3.tuple.Pair;
+import  com.summer.cleaner.dto.*;
 
 /**
  * Функции для работы с CleanerImpl.
@@ -19,16 +20,18 @@ public class CleanerFunctionalStaticImpl {
     Point currentPosition = cleaner.currentPosition;
     Angle angleRelationNorth = cleaner.angleRelationNorth;
     CleanMode currentCleanMode = cleaner.currentCleanMode;
-    Point nextPosition = currentField.move(
+    Pair<Boolean,Point> isNormalizedAndNextPosition = currentField.moveWithCheckNormalize(
         currentPosition,
         metersToForward,
         angleRelationNorth);
-    currentPosition = nextPosition;
+    Point nextPosition = isNormalizedAndNextPosition.getRight();
     String text = String.format(
         "POS %d,%d",
         nextPosition.x().getMetersInt(),
         nextPosition.y().getMetersInt());
-    OutMessage outMessage = new OutMessage(text);
+      boolean isNormalized = isNormalizedAndNextPosition.getLeft();
+     ValidationMessage validationMessage = checkMoveStatus();
+    OutMessage outMessage = new OutMessage(text, validationMessage);
     CleanerImpl updatedCleaner = CleanerImpl.of(
         currentPosition,
         currentField,
@@ -36,6 +39,13 @@ public class CleanerFunctionalStaticImpl {
         currentCleanMode);
     return Pair.of(updatedCleaner, outMessage);
   }
+
+  ValidationMessage checkMoveStatus(boolean isNormalized){
+	  if(isNormalized){
+	  	MoveResponse.HIT_BARRIER;
+	  	}
+	  return MoveResponse.MOVE_OK;
+	}
 
 
   public static Pair<CleanerImpl, OutMessage> turn(CleanerImpl cleaner, Angle angle) {
@@ -63,16 +73,27 @@ public class CleanerFunctionalStaticImpl {
     String text = String.format(
         "STATE %s",
         cleanMode.name().toUpperCase());
-    OutMessage outMessage = new OutMessage(text);
-    CleanerImpl updatedCleaner = CleanerImpl.of(
+    ValidationMessage validationMessage = checkResources(cleanMode);
+    OutMessage outMessage = new OutMessage(text, validationMessage);
+      CleanerImpl updatedCleaner = CleanerImpl.of(
         currentPosition,
         currentField,
         angleRelationNorth,
         cleanMode);
-    assert updatedCleaner.currentCleanMode == cleanMode;
     return Pair.of(updatedCleaner, outMessage);
   }
 
+  
+public SetStateResponse checkResources(CleanMode newMode) {
+    if (newMode == CleanMode.WATER) {
+        return SetStateResponse.NO_WATER;
+    } else if (newMode == CleanMode.SOAP) {
+        return SetStateResponse.NO_SOAP;
+    }
+    
+    return SetStateResponse.OK;
+}
+  
   public static Pair<CleanerImpl, OutMessage>  start(CleanerImpl cleaner) {
     String text = String.format(
         "START WITH %s",
