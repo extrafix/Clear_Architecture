@@ -65,4 +65,30 @@ public class Field {
     }
     return normalizeCoordinates(nextX, nextY);
   }
+
+   public Pair<Boolean,Point> moveWithCheckNormalize(
+      Point currentPosition,
+      Meter metersToForward,
+      Angle angleRelationNorth) {
+    Meter nextX = currentPosition.x();
+    Meter nextY = currentPosition.y();
+    int currentAngleInt = angleRelationNorth.getAngleInt();
+    if (currentAngleInt == 0) {
+      nextX = currentPosition.x().plus(metersToForward); // Вправо
+    }
+    if (currentAngleInt == 90) {
+      nextY = currentPosition.y().plus(metersToForward); // Вниз
+    }
+    if (currentAngleInt == 180) {
+      nextX = currentPosition.x().minus(metersToForward); // Влево
+    }
+    if (currentAngleInt == 270) {
+      nextY = currentPosition.y().minus(metersToForward);// Вверх
+    }
+    Point potentialPoint = Point(nextX, nextY);
+    Point normalizedPoint =   normalizeCoordinates(nextX, nextY);
+    Boolean isInBorder = isInBorder(potentialPoint);
+	
+    return Pair.of(!isInBorder, normalizedPoint);
+  }
 }
