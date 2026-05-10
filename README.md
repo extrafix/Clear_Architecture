@@ -1,16 +1,12 @@
-# Stream Processing
-Самое сложное для понимания задание оказалось.  
-[CommandInterpreter](https://github.com/extrafix/Clear_Architecture/blob/event_sourcing/src/main/java/com/summer/cleaner/interpreter/CommandInterpreter.java), в нем задаю [EventStore](https://github.com/extrafix/Clear_Architecture/blob/event_sourcing/src/main/java/com/summer/cleaner/store/event/EventStore.java), добавляю слушателей (processors) для событий и вызываю по событию нужный слушатель.  
-Так как логика у меня осталась инкапсулирована в Command, то по их типа и создавал Event в [CommandToRequestEventTransformer](https://github.com/extrafix/Clear_Architecture/blob/event_sourcing/src/main/java/com/summer/cleaner/input/transformer/CommandToRequestEventTransformer.java).   
+# Обработка ошибок при задании нового состояния
+В первом решении в стиле ООП выделил [OutMessage](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/out/OutMessage.java) в отдельный класс. Ранее там было только только поле String text, но сейчас смог не меняя никакой код использующий уже этот интерфейс работы с OutMessage, добавить в него новое поле, которое хранит Optional<ValidationMessage>.
+Из вызывающего кода менял только создание OutMessage в реализации метода move() и set() (установка моющего режиме) в [CleanerFunctionalStaticImpl](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/robot/CleanerFunctionalStaticImpl.java)
+Одну из проверок реализовал в этом же классе, а для еще одной создал новый метод в [Field](https://github.com/extrafix/Clear_Architecture/blob/catch_bounds/src/main/java/com/summer/cleaner/field/Field.java)
 
 
 ### Плюсы
-* Теперь проще смотреть на kafka не как на что-то очень сложное само в себе, а просто как на EventStore с функцией вызова нужных Consumer(Listener/Processor) по событию (сообщение) нужного типа и коммитить что event обработан только если действительно удалось его выполнить.
-* Так же в kafka после обработки сообщение продолжает храниться и можем попытаться востановить состояние проиграв повторно всю цепочку
-
+* Не происходит остановки интерпретации в случае нестандартной ситуации.
+* Пользоваться такой программой исправляющей ошибки комманд - приятней.
 
 ### Минусы
-* Для понимания было трудно с непривычки.  Да и сейчас еще надо будет внимательно смотреть пример.
-  Вызывать слушателей вроде надо было из EventStore, но тогда это циклическая зависимость, т.к. они тоже имеют поле EventStore.
-  В идеале, это решается разделением на клиентское и серверное API, как в kafka.   
-* Каждое увеличение Store будет сказываться на скорости получения результата следющего, что можно ускорить если возвращать крайнее состояние из DoneEvent, а всю цепочку хранить если потребуется отладка.   
+* Чем больше внешних неожиданных ситуаций будем предугадывать, тем сложнее может стать программа и наша обработка может сделать только хуже, а этого мы могли не предусмотреть.
