@@ -1,7 +1,7 @@
 package com.summer.cleaner.arguments;
 
 
-public class Angle{
+public final class Angle{
 
   private final int angleInt;
 
