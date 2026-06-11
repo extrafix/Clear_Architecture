@@ -3,7 +3,7 @@ package com.summer.cleaner.arguments;
 /**
  * Метры. Всегда положительны.
  **/
-public class Meter {
+public final class Meter {
 
   private final int metersInt;
 
