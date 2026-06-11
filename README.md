@@ -1,14 +1,17 @@
 ## AST
 
-Реализацию от списка комманд вижу в изменении(обертке) комманд в узлы CommandNode и добавление узла типа программа ProgramNode.
+Реализацию от списка комманд вижу в изменении(обертке) комманд в узлы [CommandNode](https://github.com/extrafix/Clear_Architecture/blob/AST/src/main/java/com/summer/cleaner/ast/CommandNode.java) и добавление узла типа программа [ProgramNode](https://github.com/extrafix/Clear_Architecture/blob/AST/src/main/java/com/summer/cleaner/ast/ProgramNode.java).
 
-В ProgramNode так же добавлен атрибут initialState.   
+В ProgramNode есть список CommandNode и так же добавлен атрибут initialState.   
 Можем задавать программу через создание ProgramNode, в который передается список CommandNode и initialState.
 
 Все команды у меня "одноуровневые", то есть нет комманд вроде операторов или циклов, которые бы могли усложнить структуру узлов.
 
+Добавлены новые реализации ранее уже применяемых классов:  
+* Интерпретатор [AstInterpreter](https://github.com/extrafix/Clear_Architecture/blob/AST/src/main/java/com/summer/cleaner/interpreter/AstInterpreter.java)
+* Транформер комманд [CommandToNodeTransformer](https://github.com/extrafix/Clear_Architecture/blob/AST/src/main/java/com/summer/cleaner/input/transformer/CommandToNodeTransformer.java) 
 
-### Анализ реализации Stream Processing
+## Анализ реализации Stream Processing
 
 RobotState - у меня так же dto с final полями CleanerImpl
 
