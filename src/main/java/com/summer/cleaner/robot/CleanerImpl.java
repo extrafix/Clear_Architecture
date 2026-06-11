@@ -7,7 +7,7 @@ import com.summer.cleaner.arguments.Point;
 import com.summer.cleaner.field.Field;
 
 
-public class CleanerImpl
+public final class CleanerImpl
     implements Cleaner {
 
   public final Point currentPosition;
