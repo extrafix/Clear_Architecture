@@ -45,21 +45,16 @@ public class CommandInterpreter {
   }
 
   boolean execPostfix(String commandAndArgumentString) {
-    List<String> commandStrings = inToCommandPostfixTransformer.execPostfix(commandAndArgumentString);
+    List<String> commandStrings = inToCommandPostfixTransformer.execPostfix(
+        commandAndArgumentString);
     return exec(commandStrings);
   }
 
-  boolean exec(List<String> commandStrings) {
+  boolean exec(List<String> commandStrings, CleanerImpl initState) {
     List<Pair<String, Object>> parsedCommandsAndArguments = inToCommandTransformer.exec(
         commandStrings);
     List<Command> commands = parsedStringToCommandTransformer.exec(parsedCommandsAndArguments);
-
-    CleanerImpl currentCleaner = CleanerImpl.of(
-        currentPosition,
-        currentField,
-        Angle.of(0),
-        CleanMode.WATER);
-
+    CleanerImpl currentCleaner = initState;
     List<OutMessage> outMessages = new ArrayList<>();
     for (Command command : commands) {
       Pair<CleanerImpl, OutMessage> commandResult = command.exec(currentCleaner);
@@ -71,6 +66,17 @@ public class CommandInterpreter {
     outMessages.forEach(outMessage ->
         System.out.println(outMessage.text()));
     return true;
+  }
+
+  boolean exec(List<String> commandStrings) {
+
+    CleanerImpl initState = CleanerImpl.of(
+        currentPosition,
+        currentField,
+        Angle.of(0),
+        CleanMode.WATER);
+
+    return exec(commandStrings, initState);
   }
 
 }

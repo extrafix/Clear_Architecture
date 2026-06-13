@@ -35,6 +35,14 @@ public class Field {
   }
 
   /**
+   * Проверка, что координаты находятся в границах поля.
+   **/
+  public boolean isInBorder(Meter nextX, Meter nextY) {
+    Point point = new Point(nextX, nextY);
+    return isInBorder(point);
+  }
+
+  /**
    * Проверка, что точка находится в границах поля.
    **/
   public boolean isInBorder(Point point) {
@@ -62,6 +70,10 @@ public class Field {
     }
     if (currentAngleInt == 270) {
       nextY = currentPosition.y().minus(metersToForward);// Вверх
+    }
+    boolean isOutBorder = !isInBorder(nextX, nextY);
+    if (isOutBorder) {
+      return null;
     }
     return normalizeCoordinates(nextX, nextY);
   }

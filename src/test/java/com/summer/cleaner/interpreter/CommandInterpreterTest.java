@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.summer.cleaner.arguments.Angle;
 import com.summer.cleaner.arguments.CleanMode;
 import com.summer.cleaner.arguments.Meter;
+import com.summer.cleaner.arguments.Point;
+import com.summer.cleaner.field.Field;
 import com.summer.cleaner.function.impl.MoveImpl;
 import com.summer.cleaner.function.impl.StartImpl;
 import com.summer.cleaner.function.impl.TurnImpl;
@@ -25,6 +27,14 @@ class CommandInterpreterTest {
   private List<String> commands;
 
   private String expectedOutput;
+
+  private Point currentPosition = new Point(
+      Meter.of(0),
+      Meter.of(0));
+
+  private Field currentField = new Field(
+      Meter.of(500),
+      Meter.of(500));
 
   @BeforeEach
   public void setUp() {
@@ -47,6 +57,36 @@ class CommandInterpreterTest {
   }
 
   @Test
+  void testOutBorder() {
+    commands = Arrays.asList(
+        "move 100",
+        "turn -90",
+        "set soap",
+        "start",
+        "move 500",
+        "stop"
+    );
+    expectedOutput =
+        "POS 100,0" + System.lineSeparator() +
+            "ANGLE 270" + System.lineSeparator() +
+            "Среди доступных для выбора состояний [ WATER, BRUSH ] нет STATE SOAP" + System.lineSeparator() +
+            "START WITH WATER" + System.lineSeparator() +
+            "Выполнение команды move 500 м не возможно, т.к. робот выйдет за пределы поля"
+            + System.lineSeparator() +
+            "STOP";
+    CommandInterpreter interpreter = new CommandInterpreter();
+    CleanerImpl initState = CleanerImpl.of(
+        currentPosition,
+        currentField,
+        Angle.of(0),
+        CleanMode.WATER,
+        List.of(CleanMode.WATER, CleanMode.BRUSH));
+    interpreter.exec(commands, initState);
+
+    assertEquals(expectedOutput, outputStreamCaptor.toString().trim());
+  }
+
+  @Test
   void testExecSequentialCommands() {
 
     CommandInterpreter interpreter = new CommandInterpreter();
@@ -56,7 +96,7 @@ class CommandInterpreterTest {
   }
 
   @Test
-  void testExecPostfix(){
+  void testExecPostfix() {
     String inputCommands = "100 move -90 turn soap set start 50 move stop";
     CommandInterpreter interpreter = new CommandInterpreter();
     interpreter.execPostfix(inputCommands);
