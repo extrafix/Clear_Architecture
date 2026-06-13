@@ -1,4 +1,4 @@
-# Архитектурный подход на основе возможностей (capabilities)
+# Архитектурный подход на основе возможностей - capabilities
 
 * [CleanerFunctionalStaticImpl](https://github.com/extrafix/Clear_Architecture/blob/capabilities/src/main/java/com/summer/cleaner/robot/CleanerFunctionalStaticImpl.java) - содержит реализации функций, которые дергаются в объектах команд.
   Добавлена обработка прокидывания в пользовательский вывод информации о доступности операций.
