@@ -1,9 +1,9 @@
 # Архитектурный подход на основе возможностей (capabilities)
 
-* [CleanerFunctionalStaticImpl] - содержит реализации функций, которые дергаются в объектах команд.
+* [CleanerFunctionalStaticImpl](https://github.com/extrafix/Clear_Architecture/blob/capabilities/src/main/java/com/summer/cleaner/robot/CleanerFunctionalStaticImpl.java) - содержит реализации функций, которые дергаются в объектах команд.
   Добавлена обработка прокидывания в пользовательский вывод информации о доступности операций.
-* [Field] - добавлена проверка без выбрасывания исключения, что бы оповещать пользователя о невозможности операции, но не блокировать ввод последующих.
-* [CommandInterpreterTest.testOutBorder] - тест на выход за границы поля и установку недоступного режима отчистки.
+* [Field](https://github.com/extrafix/Clear_Architecture/blob/capabilities/src/main/java/com/summer/cleaner/field/Field.java) - добавлена проверка без выбрасывания исключения, что бы оповещать пользователя о невозможности операции, но не блокировать ввод последующих.
+* [CommandInterpreterTest.testOutBorder](https://github.com/extrafix/Clear_Architecture/blob/capabilities/src/test/java/com/summer/cleaner/interpreter/CommandInterpreterTest.java#L60) - тест на выход за границы поля и установку недоступного режима отчистки.
 
 ### Плюсы
 * Ввод следующей команды для программиста робота проще, т.к. выбирать он может из доступного
